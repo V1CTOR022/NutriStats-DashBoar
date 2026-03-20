@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NutriStats</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap"
+        rel="stylesheet" />
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+    <header id="mobileHeader">
+        <button id="menuBtn" onclick="toggleSidebar()">☰</button>
+        <div class="sidebar-logo" style="padding:0; flex:1;">
+            <div class="logo-icon" style="background:transparent; padding:0; width:70px; height:70px; flex-shrink:0;">
+                <img src="logolimpa.png"
+                    style="width:100%; height:100%; object-fit:contain; border-radius:inherit; transform:scale(1.6);" />
+            </div>z
+            <span>Nutri<em>Stats</em></span>
+        </div>
+        <button class="btn-icon" onclick="toggleTheme()" title="Alternar tema">🌙</button>
+    </header>
+
+    <div id="mobileOverlay" onclick="closeSidebar()"></div>
+
+    <aside id="sidebar">
+        <div class="sidebar-logo">
+            <div class="logo-icon" style="background:transparent; padding:0; width:70px; height:70px; flex-shrink:0;">
+                <img src="logolimpa.png"
+                    style="width:100%; height:100%; object-fit:contain; border-radius:inherit; transform:scale(1.6);" />
+            </div>
+            <span>Nutri<em>Stats</em></span>
+        </div>
+
+        <span class="nav-section-label">Principal</span>
+        <div class="nav-item active" onclick="navigate('dashboard')" data-page="dashboard">
+            Visão Geral
+        </div>
+
+        <span class="nav-section-label" style="margin-top:10px;">Nutrição</span>
+        <div class="nav-item" onclick="navigate('alimentos')" data-page="alimentos">
+            Base Alimentar
+        </div>
+        <div class="nav-item" onclick="navigate('diario')" data-page="diario">
+            Diário Alimentar
+            <span class="nav-badge" id="badgeDiario">0</span>
+        </div>
+
+        <span class="nav-section-label" style="margin-top:10px;">Saúde & Hábitos</span>
+        <div class="nav-item" onclick="navigate('timer')" data-page="timer">
+            Jejum Intermitente
+        </div>
+        <div class="nav-item" onclick="navigate('metas')" data-page="metas">
+            Metas de Macros
+        </div>
+        <div class="nav-item" onclick="navigate('stats')" data-page="stats">
+            Estatísticas
+        </div>
+
+        <div class="sidebar-bottom">
+            <button id="themeToggle" onclick="toggleTheme()">
+                <span id="themeIcon">🌙</span>
+                <span id="themeLabel">Modo Escuro</span>
+            </button>
+        </div>
+    </aside>
+
+    <main id="main">
+
+
+        <div id="profileBtn" onclick="toggleProfile()" title="Perfil">
+            <span id="profileInitial">U</span>
+        </div>
+
+        <div id="profileDropdown">
+            <div class="profile-header">
+                <div class="profile-avatar-lg"><span id="profileInitialBig">U</span></div>
+                <div>
+                    <div class="profile-name" id="profileNameDisplay">Usuário</div>
+                    <div class="profile-sub" id="profileEmailDisplay">Bem-vindo ao NutriStats!</div>
+                </div>
+            </div>
+            <div class="profile-divider"></div>
+            <div class="form-group" style="padding:12px 16px 0">
+                <label class="form-label">Seu nome</label>
+                <input type="text" id="profileNameIn" placeholder="Digite seu nome..." oninput="updateProfileName()" />
+            </div>
+        </div>
+
+        <div id="profileOverlay" onclick="closeProfile()"></div>
+
+        <section id="page-dashboard" class="page active">
+            <div id="dashGreeting" class="dashboard-greeting"></div>
+            <div id="dashDate" class="dashboard-date"></div>
+
+            <div class="grid-4 mb-16" id="statCards">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon" style="background:rgba(249,96,96,0.15)">🔥</div>
+                    </div>
+                    <div class="stat-value" id="statCalorias">0</div>
+                    <div class="stat-label">Kcal Consumidas</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon" style="background:rgba(62,207,142,0.15)">🍗</div>
+                    </div>
+                    <div class="stat-value" id="statProteinas">0g</div>
+                    <div class="stat-label">Proteínas</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon" style="background:rgba(74,175,245,0.15)">💧</div>
+                    </div>
+                    <div class="stat-value" id="statAgua">0 L</div>
+                    <div class="stat-label">Água Consumida</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon" style="background:rgba(244,197,66,0.15)">🎯</div>
+                    </div>
+                    <div class="stat-value" id="statMetas">0%</div>
+                    <div class="stat-label">Progresso Diário</div>
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-title">🍽️ Refeições de Hoje</div>
+                    <div id="dashTasks"></div>
+                    <button class="btn btn-ghost btn-sm mt-12 w-100" onclick="navigate('diario')">Ver diário completo
+                        →</button>
+                </div>
+
+                <div class="card" id="dashGoalsCard">
+                    <div class="card-title">🎯 Progresso de Macros</div>
+                    <div id="dashGoals"></div>
+                </div>
+            </div>
+
+            <div class="card mt-16" style="display:flex; align-items:center; gap:16px; flex-wrap:wrap;">
+                <div style="font-size:1.5rem">💧</div>
+                <div style="font-weight:700; flex:1">Registrar Água</div>
+                <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                    <button class="btn btn-ghost btn-sm" onclick="addWater(0.2); renderDashboard()">+200ml</button>
+                    <button class="btn btn-ghost btn-sm" onclick="addWater(0.35); renderDashboard()">+350ml</button>
+                    <button class="btn btn-ghost btn-sm" onclick="addWater(0.5); renderDashboard()">+500ml</button>
+                    <button class="btn btn-ghost btn-sm" onclick="addWater(1); renderDashboard()">+1L</button>
+                </div>
+            </div>
+
+        </section>
+
+        <section id="page-diario" class="page">
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">Diário Alimentar</h1>
+                    <p class="page-subtitle">Acompanhe suas refeições ao longo do dia</p>
+                </div>
+                <button class="btn btn-primary" onclick="openModal('modalLog')">＋ Adicionar Consumo</button>
+            </div>
+
+            <div class="filter-bar" id="logFilters">
+                <button class="filter-btn active" onclick="filterLogs('all', this)">Todas</button>
+                <button class="filter-btn" onclick="filterLogs('Café da Manhã', this)">Café da Manhã</button>
+                <button class="filter-btn" onclick="filterLogs('Almoço', this)">Almoço</button>
+                <button class="filter-btn" onclick="filterLogs('Lanche', this)">Lanche</button>
+                <button class="filter-btn" onclick="filterLogs('Jantar', this)">Jantar</button>
+            </div>
+
+
+            <div class="flex items-center justify-between mb-16"
+                style="background:var(--bg3); padding:10px 16px; border-radius:var(--radius-sm)">
+                <button class="btn-icon" onclick="changeLogDate(-1)">←</button>
+                <span id="logDateDisplay" style="font-weight:600; font-family:'DM Sans'; font-size:1.1rem">Hoje</span>
+                <button class="btn-icon" onclick="changeLogDate(1)">→</button>
+            </div>
+
+            <div id="logList"></div>
+        </section>
+
+        <section id="page-alimentos" class="page">
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">Base Alimentar</h1>
+                    <p class="page-subtitle">Cadastre informações nutricionais dos seus alimentos</p>
+                </div>
+                <button class="btn btn-primary" onclick="openModal('modalFood')">＋ Novo Alimento</button>
+            </div>
+
+            <input type="text" id="foodSearch" placeholder="🔍 Pesquisar alimentos..." oninput="renderFoodGrid()"
+                style="margin-bottom:12px; max-width:400px;" />
+
+            <div class="filter-bar" id="catFilterBar" style="margin-bottom:20px;"></div>
+
+            <div class="grid-3" id="foodGrid"></div>
+        </section>
+
+        <section id="page-timer" class="page">
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">Jejum Intermitente</h1>
+                    <p class="page-subtitle">Acompanhe o tempo das suas janelas metabólicas</p>
+                </div>
+            </div>
+
+            <div class="timer-container">
+                <div class="timer-mode-tabs">
+                    <div class="timer-tab active" onclick="setTimerMode('fasting', this)">Modo Jejum</div>
+                    <div class="timer-tab" onclick="setTimerMode('eating', this)">Janela Alimentar</div>
+                </div>
+
+                <div class="timer-ring-wrap timer-ring-clickable" onclick="openFullscreenTimer()"
+                    title="Clique para tela cheia">
+                    <svg viewBox="0 0 260 260" width="260" height="260">
+                        <defs>
+                            <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" style="stop-color:var(--accent)" />
+                                <stop offset="100%" style="stop-color:var(--accent2)" />
+                            </linearGradient>
+                        </defs>
+                        <circle class="timer-ring-bg" cx="130" cy="130" r="115" />
+                        <circle class="timer-ring-fill" cx="130" cy="130" r="115" id="timerRing"
+                            stroke-dasharray="722.57" stroke-dashoffset="0" />
+                    </svg>
+                    <div class="timer-display">
+                        <div class="timer-time" id="timerDisplay">16:00:00</div>
+                        <div class="timer-label" id="timerModeLabel">Tempo de Jejum</div>
+                        <div class="timer-expand-hint">⛶ tela cheia</div>
+                    </div>
+                </div>
+
+                <div class="timer-sessions" id="timerSessions"></div>
+
+                <div class="timer-controls">
+                    <button class="timer-btn" onclick="resetTimer()" title="Reiniciar">↺</button>
+                    <button class="timer-btn main-btn" id="timerMainBtn" onclick="toggleTimer()">▶</button>
+                </div>
+
+                <div class="card mt-12">
+                    <div class="card-title">Progresso Diário</div>
+                    <div class="timer-subject-select mb-12">
+                        <select id="timerGoalSel" onchange="updateFastingGoals()">
+                            <option value="12">Meta: 12h Jejum / 12h Janela</option>
+                            <option value="14">Meta: 14h Jejum / 10h Janela</option>
+                            <option value="16" selected>Meta: 16h Jejum / 8h Janela</option>
+                            <option value="18">Meta: 18h Jejum / 6h Janela</option>
+                            <option value="20">Meta: 20h Jejum / 4h Janela</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="page-metas" class="page">
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">Metas e Macros</h1>
+                    <p class="page-subtitle">Ajuste seu objetivo nutricional diário</p>
+                </div>
+                <button class="btn btn-primary" onclick="openModal('modalGoal')">🛠️ Configurar Metas</button>
+            </div>
+
+            <div class="grid-2">
+                <div>
+                    <h3
+                        style="font-family:'DM Sans';font-size:1rem;font-weight:700;margin-bottom:14px;color:var(--text2);">
+                        🔥 CALORIAS E HIDRATAÇÃO</h3>
+
+                    <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px;">
+                        <button class="btn btn-ghost btn-sm" onclick="addWater(0.2)">💧 +200ml</button>
+                        <button class="btn btn-ghost btn-sm" onclick="addWater(0.35)">💧 +350ml</button>
+                        <button class="btn btn-ghost btn-sm" onclick="addWater(0.5)">💧 +500ml</button>
+                        <button class="btn btn-ghost btn-sm" onclick="addWater(1)">💧 +1L</button>
+                    </div>
+
+                    <div id="goalsDaily"></div>
+                </div>
+                <div>
+                    <h3
+                        style="font-family:'DM Sans';font-size:1rem;font-weight:700;margin-bottom:14px;color:var(--text2);">
+                        🥩 MACRONUTRIENTES</h3>
+                    <div id="goalsMacros"></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="page-stats" class="page">
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">Estatísticas</h1>
+                    <p class="page-subtitle">Acompanhe seu consumo nos últimos 7 dias</p>
+                </div>
+            </div>
+
+            <div class="grid-4 mb-16" id="statsOverview"></div>
+
+            <div class="grid-2">
+                <div class="chart-card">
+                    <div class="card-title">📉 Calorias Totais (7 dias)</div>
+                    <div class="chart-wrap"><canvas id="chartHours"></canvas></div>
+                </div>
+                <div class="chart-card">
+                    <div class="card-title">🥩 Média de Distribuição de Macros</div>
+                    <div class="chart-wrap"><canvas id="chartSubjects"></canvas></div>
+                </div>
+            </div>
+
+            <div class="chart-card mt-16">
+                <div class="card-title">💧 Consumo de Água (Litros)</div>
+                <div class="chart-wrap"><canvas id="chartTasks"></canvas></div>
+            </div>
+        </section>
+
+    </main>
+
+    <div id="toast">
+        <span class="toast-icon" id="toastIcon">✅</span>
+        <span id="toastMsg">Operação realizada!</span>
+    </div>
+
+    <div class="modal-overlay" id="modalLog">
+        <div class="modal">
+            <div class="modal-header">
+                <span class="modal-title" id="modalLogTitle">Adicionar Consumo</span>
+                <button class="modal-close" onclick="closeModal('modalLog')">✕</button>
+            </div>
+            <input type="hidden" id="logEditId" />
+
+            <div class="form-group">
+                <label class="form-label">Alimento *</label>
+                <select id="logFoodIn"></select>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Porção Consumida (g/ml)</label>
+                    <input type="number" id="logAmountIn" placeholder="100" min="1" value="100" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Refeição</label>
+                    <select id="logMealIn">
+                        <option value="Café da Manhã">Café da Manhã</option>
+                        <option value="Almoço" selected>Almoço</option>
+                        <option value="Lanche">Lanche</option>
+                        <option value="Jantar">Jantar</option>
+                        <option value="Ceia">Ceia</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Data</label>
+                    <input type="date" id="logDateIn" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Horário</label>
+                    <input type="time" id="logTimeIn" />
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-ghost" onclick="closeModal('modalLog')">Cancelar</button>
+                <button class="btn btn-primary" onclick="saveLog()">Salvar Consumo</button>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal-overlay" id="modalFood">
+        <div class="modal">
+            <div class="modal-header">
+                <span class="modal-title" id="modalFoodTitle">Novo Alimento</span>
+                <button class="modal-close" onclick="closeModal('modalFood')">✕</button>
+            </div>
+            <input type="hidden" id="foodEditId" />
+            <div class="form-group">
+                <label class="form-label">Nome do Alimento *</label>
+                <input type="text" id="foodNameIn" placeholder="Ex: Peito de Frango, Arroz..." />
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Porção (g/ml)</label>
+                    <input type="number" id="foodRefAmountIn" placeholder="100" min="1" value="100" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Calorias (Kcal) *</label>
+                    <input type="number" id="foodKcalIn" placeholder="Ex: 110" min="0" />
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Proteínas (g)</label>
+                    <input type="number" id="foodProtIn" placeholder="Ex: 23" min="0" step="0.1" value="0" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Carbos (g)</label>
+                    <input type="number" id="foodCarbIn" placeholder="Ex: 0" min="0" step="0.1" value="0" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Gorduras (g)</label>
+                    <input type="number" id="foodFatIn" placeholder="Ex: 2.5" min="0" step="0.1" value="0" />
+                </div>
+            </div>
+
+            <div class="form-group" style="display:none">
+                <div class="color-swatches" id="foodColorPicker"></div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Ícone</label>
+                <div class="color-swatches" id="foodIconPicker"></div>
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn btn-ghost" onclick="closeModal('modalFood')">Cancelar</button>
+                <button class="btn btn-primary" onclick="saveFood()">Salvar Alimento</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modalGoal">
+        <div class="modal">
+            <div class="modal-header">
+                <span class="modal-title" id="modalGoalTitle">Metas Nutricionais</span>
+                <button class="modal-close" onclick="closeModal('modalGoal')">✕</button>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Calorias (Kcal/dia)</label>
+                <input type="number" id="goalKcalIn" placeholder="Ex: 2000" min="500" />
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Proteínas (g)</label>
+                    <input type="number" id="goalProtIn" placeholder="Ex: 150" min="0" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Carboidratos (g)</label>
+                    <input type="number" id="goalCarbIn" placeholder="Ex: 200" min="0" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Gorduras (g)</label>
+                    <input type="number" id="goalFatIn" placeholder="Ex: 60" min="0" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Água (Litros/dia)</label>
+                <input type="number" id="goalWaterIn" placeholder="Ex: 3" step="0.1" min="0.5" />
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn btn-ghost" onclick="closeModal('modalGoal')">Cancelar</button>
+                <button class="btn btn-primary" onclick="saveGoalValues()">Salvar Metas</button>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="timerFullscreen" class="timer-fullscreen" onclick="handleFullscreenClick(event)">
+        <button class="timer-fs-close" id="timerFsClose" onclick="closeFullscreenTimer(event)"
+            title="Fechar tela cheia">✕</button>
+
+        <div class="timer-fs-tabs">
+            <div class="timer-fs-tab" id="fsTab-fasting" onclick="setTimerModeFs('fasting', this)">Jejum</div>
+            <div class="timer-fs-tab" id="fsTab-eating" onclick="setTimerModeFs('eating', this)">Janela Alimentar</div>
+        </div>
+
+        <div class="timer-fs-ring-wrap">
+            <svg viewBox="0 0 360 360" width="360" height="360">
+                <defs>
+                    <linearGradient id="ringGradFs" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" style="stop-color:var(--accent)" />
+                        <stop offset="100%" style="stop-color:var(--accent2)" />
+                    </linearGradient>
+                </defs>
+                <circle class="timer-ring-bg" cx="180" cy="180" r="160" />
+                <circle class="timer-ring-fill" cx="180" cy="180" r="160" id="timerRingFs" stroke-dasharray="1005.31"
+                    stroke-dashoffset="0" />
+            </svg>
+            <div class="timer-fs-display">
+                <div class="timer-fs-time" id="timerDisplayFs">16:00:00</div>
+                <div class="timer-fs-label" id="timerModeLabelFs">Tempo de Jejum</div>
+            </div>
+        </div>
+
+        <div class="timer-controls" style="margin-bottom:0">
+            <button class="timer-btn" onclick="resetTimerFs(event)" title="Reiniciar">↺</button>
+            <button class="timer-btn main-btn" id="timerMainBtnFs" onclick="toggleTimerFs(event)">▶</button>
+        </div>
+
+        <div class="timer-fs-info">
+            <span id="timerFsSessionCount">Meta 16/8h</span>
+        </div>
+    </div>
+
+
+    <script src="app.js"></script>
+</body>
+
+</html>
