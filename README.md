@@ -1,3 +1,4 @@
+https://v1ctor022.github.io/NutriStats-DashBoard/
 # 📊 Nutri Stats - Dashboard
 
 O **Dashboard do Nutri Stats** é a parte principal da aplicação, onde o usuário pode visualizar, organizar e acompanhar informações relacionadas à sua alimentação e dados nutricionais.
